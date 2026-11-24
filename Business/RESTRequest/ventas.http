@@ -1,0 +1,90 @@
+@host = http://localhost:9090/api
+@uri = {{host}}/ventas
+@token = {{login.response.body.token}}
+
+# @name login
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{ "username": "vendedor01", "password": "Ventas2026#" }
+###
+
+GET {{uri}}
+Authorization: Bearer {{token}}
+###
+
+### Venta con su detalle
+GET {{uri}}/1
+Authorization: Bearer {{token}}
+###
+
+### Filtros: desde, hasta, estado, metodo_pago, cliente_id, usuario_id, cliente
+GET {{uri}}/filter/0/10?desde=2026-11-01&hasta=2026-11-30&estado=Completada
+Authorization: Bearer {{token}}
+###
+
+### Calcular sin guardar (carrito): precios del catálogo, descuento e IVA 13 %
+POST {{uri}}/cotizar
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "descuento_porcentaje": 10,
+    "detalle": [
+        { "producto_id": 1, "cantidad": 2 },
+        { "producto_id": 6, "cantidad": 1 }
+    ]
+}
+###
+
+### Registrar venta (descuenta stock y deja el movimiento en la bitácora)
+POST {{uri}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "cliente_id": 1,
+    "metodo_pago": "SINPE Móvil",
+    "observaciones": "Pago con SINPE al 8888-0000",
+    "detalle": [
+        { "producto_id": 1, "cantidad": 2 },
+        { "producto_id": 6, "cantidad": 1 }
+    ]
+}
+###
+
+### Venta de contado (sin cliente_id, método de pago por defecto: Efectivo)
+POST {{uri}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "detalle": [ { "producto_id": 8, "cantidad": 6 } ]
+}
+###
+
+### Error 422: stock insuficiente
+POST {{uri}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "detalle": [ { "producto_id": 7, "cantidad": 500 } ]
+}
+###
+
+### Corregir datos que no afectan montos
+PUT {{uri}}/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "metodo_pago": "Tarjeta",
+    "observaciones": "Corrección del método de pago"
+}
+###
+
+### Error 403: anular es solo para Admin (ver inventario_reportes.http, que entra como Admin)
+DELETE {{uri}}/1
+Authorization: Bearer {{token}}
+###

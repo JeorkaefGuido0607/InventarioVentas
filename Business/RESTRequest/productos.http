@@ -1,0 +1,82 @@
+@host = http://localhost:9090/api
+@uri = {{host}}/productos
+@token = {{login.response.body.token}}
+
+# @name login
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{ "username": "bodeguero01", "password": "Bodega2026#" }
+###
+
+GET {{uri}}
+Authorization: Bearer {{token}}
+###
+
+GET {{uri}}/6
+Authorization: Bearer {{token}}
+###
+
+### Paginación y filtros: nombre, codigo, categoria_id, proveedor_id, stock_bajo, activo
+GET {{uri}}/filter/0/10?nombre=&categoria_id=&stock_bajo=true
+Authorization: Bearer {{token}}
+###
+
+### Búsqueda por código de barras (app móvil)
+GET {{uri}}/codigo/7441002000010
+Authorization: Bearer {{token}}
+###
+
+POST {{uri}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "codigo": "7441009000013",
+    "nombre": "Galletas de avena 300 g",
+    "descripcion": "Galletas integrales de avena y miel.",
+    "categoria_id": 6,
+    "proveedor_id": 5,
+    "precio_compra": 900,
+    "precio_venta": 1250,
+    "stock": 30,
+    "stock_minimo": 8
+}
+###
+
+### Error 422: precio de venta menor al de compra
+POST {{uri}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "codigo": "7441009000020",
+    "nombre": "Producto con pérdida",
+    "categoria_id": 6,
+    "precio_compra": 900,
+    "precio_venta": 800
+}
+###
+
+PUT {{uri}}/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "precio_venta": 2200,
+    "stock_minimo": 20
+}
+###
+
+### Error 422: el stock solo cambia con movimientos o ventas
+PUT {{uri}}/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "stock": 500 }
+###
+
+### Error 403: el Bodeguero no puede eliminar (solo Admin)
+DELETE {{uri}}/1
+Authorization: Bearer {{token}}
+###

@@ -1,0 +1,54 @@
+### =============================================================
+### Autenticación (ejecutar primero el login que se necesite)
+### Los demás archivos .http hacen su propio login con "# @name".
+### =============================================================
+@host = http://localhost:9090/api
+
+# @name loginAdmin
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+    "username": "administrador",
+    "password": "Admin2026#"
+}
+###
+
+# @name loginVendedor
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+    "username": "vendedor01",
+    "password": "Ventas2026#"
+}
+###
+
+# @name loginBodeguero
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+    "username": "bodeguero01",
+    "password": "Bodega2026#"
+}
+###
+
+### Perfil del usuario dueño del token
+GET {{host}}/auth/perfil
+Authorization: Bearer {{loginVendedor.response.body.token}}
+###
+
+### Error 401: credenciales inválidas
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+    "username": "administrador",
+    "password": "incorrecta"
+}
+###
+
+### Error 401: sin token
+GET {{host}}/productos
+###

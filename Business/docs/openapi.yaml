@@ -1,0 +1,2486 @@
+openapi: 3.0.3
+info:
+  title: Inventario y Ventas - Business API
+  version: 1.0.0
+  description: 'API REST de negocio del Sistema de Inventario y Ventas (Desarrollo de Software IV).
+
+
+    Arquitectura en capas: **Business** (esta API: controladores, servicios, validadores, JWT y roles) → **Data** (Slim +
+    Eloquent, persistencia en MySQL).
+
+
+    **Autenticación:** `POST /api/auth/login` devuelve un JWT. Envíelo en el encabezado `Authorization: Bearer <token>` (botón
+    *Authorize*).
+
+
+    **Usuarios de prueba:** `administrador / Admin2026#`, `vendedor01 / Ventas2026#`, `bodeguero01 / Bodega2026#`.
+
+
+    **Formato de errores:** `{ "error": "mensaje" }` o, en validaciones, `{ "errores": { "campo": "mensaje" } }`.'
+servers:
+- url: http://localhost:9090
+  description: Docker local (web_negocio)
+security:
+- bearerAuth: []
+tags:
+- name: Autenticación
+- name: Usuarios
+- name: Categorías
+- name: Proveedores
+- name: Productos
+- name: Clientes
+- name: Ventas
+- name: Movimientos
+- name: Reportes
+paths:
+  /api/auth/login:
+    post:
+      tags:
+      - Autenticación
+      summary: Iniciar sesión (obtiene el JWT)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+      responses:
+        '200':
+          description: Sesión iniciada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sesion'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/auth/perfil:
+    get:
+      tags:
+      - Autenticación
+      summary: Usuario autenticado
+      description: '**Roles:** Admin, Vendedor, Bodeguero'
+      responses:
+        '200':
+          description: Perfil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Perfil'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+  /api/roles:
+    get:
+      tags:
+      - Usuarios
+      summary: Catálogo de roles
+      description: '**Roles:** Admin'
+      responses:
+        '200':
+          description: Roles
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Rol'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+  /api/usuarios:
+    get:
+      tags:
+      - Usuarios
+      summary: Listar usuarios
+      description: '**Roles:** Admin'
+      responses:
+        '200':
+          description: Listado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Usuario'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+    post:
+      tags:
+      - Usuarios
+      summary: Crear
+      description: '**Roles:** Admin'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioCrear'
+            example:
+              username: vendedor05
+              password: Ventas2026#
+              nombre_completo: Juan Pérez Mora
+              correo: juan@inventario.cr
+              rol_id: 2
+      responses:
+        '201':
+          description: Creado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Usuario'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '409':
+          $ref: '#/components/responses/Conflicto'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/usuarios/filter/{offset}/{limit}:
+    get:
+      tags:
+      - Usuarios
+      summary: Buscar con paginación
+      description: '**Roles:** Admin'
+      parameters:
+      - $ref: '#/components/parameters/Offset'
+      - $ref: '#/components/parameters/Limit'
+      - name: nombre
+        in: query
+        required: false
+        description: Contiene
+        schema:
+          type: string
+      - name: username
+        in: query
+        required: false
+        description: Contiene
+        schema:
+          type: string
+      - name: rol_id
+        in: query
+        required: false
+        description: Rol
+        schema:
+          type: integer
+      - name: activo
+        in: query
+        required: false
+        description: true / false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Página de resultados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Usuario'
+                  pagination:
+                    $ref: '#/components/schemas/Paginacion'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/usuarios/{id}:
+    get:
+      tags:
+      - Usuarios
+      summary: Obtener por id
+      description: '**Roles:** Admin'
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Usuario'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '404':
+          $ref: '#/components/responses/NoEncontrado'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+    put:
+      tags:
+      - Usuarios
+      summary: Actualizar (parcial)
+      description: '**Roles:** Admin (no puede cambiar su propio rol ni desactivarse)
+
+
+        Solo se validan y modifican los campos enviados.'
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioCrear'
+            example:
+              activo: false
+      responses:
+        '200':
+          description: Actualizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Usuario'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '404':
+          $ref: '#/components/responses/NoEncontrado'
+        '409':
+          $ref: '#/components/responses/Conflicto'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+    delete:
+      tags:
+      - Usuarios
+      summary: Eliminar
+      description: '**Roles:** Admin (con ventas → 409, desactívelo)'
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Eliminado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mensaje'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '404':
+          $ref: '#/components/responses/NoEncontrado'
+        '409':
+          $ref: '#/components/responses/Conflicto'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/categorias:
+    get:
+      tags:
+      - Categorías
+      summary: Listar categorías
+      description: '**Roles:** Admin, Vendedor, Bodeguero'
+      responses:
+        '200':
+          description: Listado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Categoria'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+    post:
+      tags:
+      - Categorías
+      summary: Crear
+      description: '**Roles:** Admin, Bodeguero'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoriaCrear'
+            example:
+              nombre: Mascotas
+              descripcion: Alimento y accesorios para mascotas
+      responses:
+        '201':
+          description: Creado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Categoria'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '409':
+          $ref: '#/components/responses/Conflicto'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/categorias/filter/{offset}/{limit}:
+    get:
+      tags:
+      - Categorías
+      summary: Buscar con paginación
+      description: '**Roles:** Admin, Vendedor, Bodeguero'
+      parameters:
+      - $ref: '#/components/parameters/Offset'
+      - $ref: '#/components/parameters/Limit'
+      - name: nombre
+        in: query
+        required: false
+        description: Contiene
+        schema:
+          type: string
+      - name: activo
+        in: query
+        required: false
+        description: true / false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Página de resultados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Categoria'
+                  pagination:
+                    $ref: '#/components/schemas/Paginacion'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/categorias/{id}:
+    get:
+      tags:
+      - Categorías
+      summary: Obtener por id
+      description: '**Roles:** Admin, Vendedor, Bodeguero'
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Categoria'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '404':
+          $ref: '#/components/responses/NoEncontrado'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+    put:
+      tags:
+      - Categorías
+      summary: Actualizar (parcial)
+      description: '**Roles:** Admin, Bodeguero
+
+
+        Solo se validan y modifican los campos enviados.'
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoriaCrear'
+            example:
+              descripcion: Alimento, arena y accesorios
+      responses:
+        '200':
+          description: Actualizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Categoria'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '404':
+          $ref: '#/components/responses/NoEncontrado'
+        '409':
+          $ref: '#/components/responses/Conflicto'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+    delete:
+      tags:
+      - Categorías
+      summary: Eliminar
+      description: '**Roles:** Admin (con productos → 409)'
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Eliminado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mensaje'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '404':
+          $ref: '#/components/responses/NoEncontrado'
+        '409':
+          $ref: '#/components/responses/Conflicto'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/proveedores:
+    get:
+      tags:
+      - Proveedores
+      summary: Listar proveedores
+      description: '**Roles:** Admin, Vendedor, Bodeguero'
+      responses:
+        '200':
+          description: Listado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Proveedor'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+    post:
+      tags:
+      - Proveedores
+      summary: Crear
+      description: '**Roles:** Admin, Bodeguero'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProveedorCrear'
+            example:
+              cedula_juridica: '3101999888'
+              nombre: Mascotas del Caribe S.A.
+              telefono: 2758-9999
+              correo: ventas@mascotas.cr
+      responses:
+        '201':
+          description: Creado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Proveedor'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '409':
+          $ref: '#/components/responses/Conflicto'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/proveedores/filter/{offset}/{limit}:
+    get:
+      tags:
+      - Proveedores
+      summary: Buscar con paginación
+      description: '**Roles:** Admin, Vendedor, Bodeguero'
+      parameters:
+      - $ref: '#/components/parameters/Offset'
+      - $ref: '#/components/parameters/Limit'
+      - name: nombre
+        in: query
+        required: false
+        description: Contiene
+        schema:
+          type: string
+      - name: cedula_juridica
+        in: query
+        required: false
+        description: Contiene
+        schema:
+          type: string
+      - name: activo
+        in: query
+        required: false
+        description: true / false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Página de resultados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Proveedor'
+                  pagination:
+                    $ref: '#/components/schemas/Paginacion'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/proveedores/{id}:
+    get:
+      tags:
+      - Proveedores
+      summary: Obtener por id
+      description: '**Roles:** Admin, Vendedor, Bodeguero'
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Proveedor'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '404':
+          $ref: '#/components/responses/NoEncontrado'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+    put:
+      tags:
+      - Proveedores
+      summary: Actualizar (parcial)
+      description: '**Roles:** Admin, Bodeguero
+
+
+        Solo se validan y modifican los campos enviados.'
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProveedorCrear'
+            example:
+              telefono: 2758-0000
+      responses:
+        '200':
+          description: Actualizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Proveedor'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '404':
+          $ref: '#/components/responses/NoEncontrado'
+        '409':
+          $ref: '#/components/responses/Conflicto'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+    delete:
+      tags:
+      - Proveedores
+      summary: Eliminar
+      description: '**Roles:** Admin (con productos → 409)'
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Eliminado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mensaje'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '404':
+          $ref: '#/components/responses/NoEncontrado'
+        '409':
+          $ref: '#/components/responses/Conflicto'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/productos:
+    get:
+      tags:
+      - Productos
+      summary: Listar productos
+      description: '**Roles:** Admin, Vendedor, Bodeguero'
+      responses:
+        '200':
+          description: Listado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Producto'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+    post:
+      tags:
+      - Productos
+      summary: Crear
+      description: '**Roles:** Admin, Bodeguero'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductoCrear'
+            example:
+              codigo: '7441009000013'
+              nombre: Galletas de avena 300 g
+              categoria_id: 6
+              proveedor_id: 5
+              precio_compra: 900
+              precio_venta: 1250
+              stock: 30
+              stock_minimo: 8
+      responses:
+        '201':
+          description: Creado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Producto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '409':
+          $ref: '#/components/responses/Conflicto'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/productos/filter/{offset}/{limit}:
+    get:
+      tags:
+      - Productos
+      summary: Buscar con paginación
+      description: '**Roles:** Admin, Vendedor, Bodeguero'
+      parameters:
+      - $ref: '#/components/parameters/Offset'
+      - $ref: '#/components/parameters/Limit'
+      - name: nombre
+        in: query
+        required: false
+        description: Contiene
+        schema:
+          type: string
+      - name: codigo
+        in: query
+        required: false
+        description: Contiene
+        schema:
+          type: string
+      - name: categoria_id
+        in: query
+        required: false
+        description: Categoría
+        schema:
+          type: integer
+      - name: proveedor_id
+        in: query
+        required: false
+        description: Proveedor
+        schema:
+          type: integer
+      - name: stock_bajo
+        in: query
+        required: false
+        description: true = solo productos con stock <= stock mínimo
+        schema:
+          type: boolean
+      - name: activo
+        in: query
+        required: false
+        description: true / false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Página de resultados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Producto'
+                  pagination:
+                    $ref: '#/components/schemas/Paginacion'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/productos/{id}:
+    get:
+      tags:
+      - Productos
+      summary: Obtener por id
+      description: '**Roles:** Admin, Vendedor, Bodeguero'
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Producto'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '404':
+          $ref: '#/components/responses/NoEncontrado'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+    put:
+      tags:
+      - Productos
+      summary: Actualizar (parcial)
+      description: '**Roles:** Admin, Bodeguero
+
+
+        Solo se validan y modifican los campos enviados.'
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductoActualizar'
+            example:
+              precio_venta: 1300
+      responses:
+        '200':
+          description: Actualizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Producto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '404':
+          $ref: '#/components/responses/NoEncontrado'
+        '409':
+          $ref: '#/components/responses/Conflicto'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+    delete:
+      tags:
+      - Productos
+      summary: Eliminar
+      description: '**Roles:** Admin (si ya se vendió → 409, desactívelo)'
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Eliminado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mensaje'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '404':
+          $ref: '#/components/responses/NoEncontrado'
+        '409':
+          $ref: '#/components/responses/Conflicto'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/productos/codigo/{codigo}:
+    get:
+      tags:
+      - Productos
+      summary: Buscar por código de barras (escáner de la app móvil)
+      description: '**Roles:** Admin, Vendedor, Bodeguero'
+      parameters:
+      - name: codigo
+        in: path
+        required: true
+        schema:
+          type: string
+        example: '7441002000010'
+      responses:
+        '200':
+          description: Producto
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Producto'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '404':
+          $ref: '#/components/responses/NoEncontrado'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/clientes:
+    get:
+      tags:
+      - Clientes
+      summary: Listar clientes
+      description: '**Roles:** Admin, Vendedor'
+      responses:
+        '200':
+          description: Listado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Cliente'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+    post:
+      tags:
+      - Clientes
+      summary: Crear
+      description: '**Roles:** Admin, Vendedor'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClienteCrear'
+            example:
+              cedula: '703330444'
+              nombre_completo: María José Brown
+              telefono: 8333-4444
+              latitud: 9.99
+              longitud: -83.03
+      responses:
+        '201':
+          description: Creado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Cliente'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '409':
+          $ref: '#/components/responses/Conflicto'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/clientes/filter/{offset}/{limit}:
+    get:
+      tags:
+      - Clientes
+      summary: Buscar con paginación
+      description: '**Roles:** Admin, Vendedor'
+      parameters:
+      - $ref: '#/components/parameters/Offset'
+      - $ref: '#/components/parameters/Limit'
+      - name: nombre
+        in: query
+        required: false
+        description: Contiene
+        schema:
+          type: string
+      - name: cedula
+        in: query
+        required: false
+        description: Contiene
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Página de resultados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Cliente'
+                  pagination:
+                    $ref: '#/components/schemas/Paginacion'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/clientes/{id}:
+    get:
+      tags:
+      - Clientes
+      summary: Obtener por id
+      description: '**Roles:** Admin, Vendedor'
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Cliente'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '404':
+          $ref: '#/components/responses/NoEncontrado'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+    put:
+      tags:
+      - Clientes
+      summary: Actualizar (parcial)
+      description: '**Roles:** Admin, Vendedor
+
+
+        Solo se validan y modifican los campos enviados.'
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClienteCrear'
+            example:
+              telefono: 8333-5555
+      responses:
+        '200':
+          description: Actualizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Cliente'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '404':
+          $ref: '#/components/responses/NoEncontrado'
+        '409':
+          $ref: '#/components/responses/Conflicto'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+    delete:
+      tags:
+      - Clientes
+      summary: Eliminar
+      description: '**Roles:** Admin (con ventas → 409)'
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Eliminado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mensaje'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '404':
+          $ref: '#/components/responses/NoEncontrado'
+        '409':
+          $ref: '#/components/responses/Conflicto'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/ventas:
+    get:
+      tags:
+      - Ventas
+      summary: Listar ventas
+      description: '**Roles:** Admin, Vendedor'
+      responses:
+        '200':
+          description: Listado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Venta'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+    post:
+      tags:
+      - Ventas
+      summary: Crear
+      description: '**Roles:** Admin, Vendedor'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VentaCrear'
+            example:
+              cliente_id: 1
+              metodo_pago: SINPE Móvil
+              descuento_porcentaje: 0
+              detalle:
+              - producto_id: 1
+                cantidad: 2
+              - producto_id: 6
+                cantidad: 1
+      responses:
+        '201':
+          description: Creado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Venta'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '409':
+          $ref: '#/components/responses/Conflicto'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/ventas/filter/{offset}/{limit}:
+    get:
+      tags:
+      - Ventas
+      summary: Buscar con paginación
+      description: '**Roles:** Admin, Vendedor'
+      parameters:
+      - $ref: '#/components/parameters/Offset'
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Desde'
+      - $ref: '#/components/parameters/Hasta'
+      - name: estado
+        in: query
+        required: false
+        description: Estado
+        schema:
+          type: string
+          enum:
+          - Completada
+          - Anulada
+      - name: metodo_pago
+        in: query
+        required: false
+        description: Método de pago
+        schema:
+          type: string
+      - name: cliente_id
+        in: query
+        required: false
+        description: Cliente
+        schema:
+          type: integer
+      - name: usuario_id
+        in: query
+        required: false
+        description: Vendedor
+        schema:
+          type: integer
+      - name: cliente
+        in: query
+        required: false
+        description: Nombre del cliente (contiene)
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Página de resultados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Venta'
+                  pagination:
+                    $ref: '#/components/schemas/Paginacion'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/ventas/{id}:
+    get:
+      tags:
+      - Ventas
+      summary: Obtener por id
+      description: '**Roles:** Admin, Vendedor'
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Venta'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '404':
+          $ref: '#/components/responses/NoEncontrado'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+    put:
+      tags:
+      - Ventas
+      summary: Actualizar (parcial)
+      description: '**Roles:** Admin, Vendedor
+
+
+        Solo se validan y modifican los campos enviados.'
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VentaActualizar'
+            example:
+              observaciones: Entrega a domicilio
+      responses:
+        '200':
+          description: Actualizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Venta'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '404':
+          $ref: '#/components/responses/NoEncontrado'
+        '409':
+          $ref: '#/components/responses/Conflicto'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+    delete:
+      tags:
+      - Ventas
+      summary: Anular venta (devuelve el stock; no borra el registro)
+      description: '**Roles:** Admin'
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Eliminado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mensaje'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '404':
+          $ref: '#/components/responses/NoEncontrado'
+        '409':
+          $ref: '#/components/responses/Conflicto'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/ventas/cotizar:
+    post:
+      tags:
+      - Ventas
+      summary: Calcular una venta sin guardarla (carrito)
+      description: '**Roles:** Admin, Vendedor'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VentaCrear'
+            example:
+              descuento_porcentaje: 10
+              detalle:
+              - producto_id: 1
+                cantidad: 2
+      responses:
+        '200':
+          description: Totales calculados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Venta'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/movimientos:
+    get:
+      tags:
+      - Movimientos
+      summary: Listar movimientos
+      description: '**Roles:** Admin, Bodeguero'
+      responses:
+        '200':
+          description: Listado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Movimiento'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+    post:
+      tags:
+      - Movimientos
+      summary: Crear
+      description: '**Roles:** Admin, Bodeguero'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MovimientoCrear'
+            example:
+              producto_id: 7
+              tipo: Entrada
+              cantidad: 24
+              motivo: Compra a Distribuidora Caribe
+      responses:
+        '201':
+          description: Creado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Movimiento'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '409':
+          $ref: '#/components/responses/Conflicto'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/movimientos/filter/{offset}/{limit}:
+    get:
+      tags:
+      - Movimientos
+      summary: Buscar con paginación
+      description: '**Roles:** Admin, Bodeguero'
+      parameters:
+      - $ref: '#/components/parameters/Offset'
+      - $ref: '#/components/parameters/Limit'
+      - name: producto_id
+        in: query
+        required: false
+        description: Producto
+        schema:
+          type: integer
+      - name: tipo
+        in: query
+        required: false
+        description: Tipo
+        schema:
+          type: string
+          enum:
+          - Entrada
+          - Salida
+          - Ajuste
+          - Venta
+          - Anulación
+      - $ref: '#/components/parameters/Desde'
+      - $ref: '#/components/parameters/Hasta'
+      responses:
+        '200':
+          description: Página de resultados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Movimiento'
+                  pagination:
+                    $ref: '#/components/schemas/Paginacion'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/movimientos/{id}:
+    get:
+      tags:
+      - Movimientos
+      summary: Obtener por id
+      description: '**Roles:** Admin, Bodeguero'
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Movimiento'
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '404':
+          $ref: '#/components/responses/NoEncontrado'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/reportes/dashboard:
+    get:
+      tags:
+      - Reportes
+      summary: Indicadores clave (KPI) del dashboard
+      description: '**Roles:** Admin, Vendedor, Bodeguero'
+      responses:
+        '200':
+          description: Ventas de hoy y del mes, últimos 7 días, inventario, top productos y últimas ventas
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/reportes/ventas-periodo:
+    get:
+      tags:
+      - Reportes
+      summary: Ventas por período (día o mes)
+      description: '**Roles:** Admin. Solo cuenta ventas completadas.'
+      parameters:
+      - $ref: '#/components/parameters/Desde'
+      - $ref: '#/components/parameters/Hasta'
+      - name: agrupar
+        in: query
+        required: false
+        description: Agrupación
+        schema:
+          type: string
+          enum:
+          - dia
+          - mes
+      - $ref: '#/components/parameters/Formato'
+      responses:
+        '200':
+          description: Reporte (JSON) o archivo CSV
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reporte'
+            text/csv:
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/reportes/productos-mas-vendidos:
+    get:
+      tags:
+      - Reportes
+      summary: Productos más vendidos
+      description: '**Roles:** Admin. Solo cuenta ventas completadas.'
+      parameters:
+      - $ref: '#/components/parameters/Desde'
+      - $ref: '#/components/parameters/Hasta'
+      - name: limite
+        in: query
+        required: false
+        description: Cantidad de productos (1-50)
+        schema:
+          type: integer
+          default: 10
+      - $ref: '#/components/parameters/Formato'
+      responses:
+        '200':
+          description: Reporte (JSON) o archivo CSV
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reporte'
+            text/csv:
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/reportes/ventas-categoria:
+    get:
+      tags:
+      - Reportes
+      summary: Ventas por categoría (% de participación)
+      description: '**Roles:** Admin. Solo cuenta ventas completadas.'
+      parameters:
+      - $ref: '#/components/parameters/Desde'
+      - $ref: '#/components/parameters/Hasta'
+      - $ref: '#/components/parameters/Formato'
+      responses:
+        '200':
+          description: Reporte (JSON) o archivo CSV
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reporte'
+            text/csv:
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/reportes/ventas-vendedor:
+    get:
+      tags:
+      - Reportes
+      summary: Desempeño por vendedor
+      description: '**Roles:** Admin. Solo cuenta ventas completadas.'
+      parameters:
+      - $ref: '#/components/parameters/Desde'
+      - $ref: '#/components/parameters/Hasta'
+      - $ref: '#/components/parameters/Formato'
+      responses:
+        '200':
+          description: Reporte (JSON) o archivo CSV
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reporte'
+            text/csv:
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/reportes/ventas-metodo-pago:
+    get:
+      tags:
+      - Reportes
+      summary: Ventas por método de pago
+      description: '**Roles:** Admin. Solo cuenta ventas completadas.'
+      parameters:
+      - $ref: '#/components/parameters/Desde'
+      - $ref: '#/components/parameters/Hasta'
+      - $ref: '#/components/parameters/Formato'
+      responses:
+        '200':
+          description: Reporte (JSON) o archivo CSV
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reporte'
+            text/csv:
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '422':
+          $ref: '#/components/responses/Validacion'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+  /api/reportes/inventario:
+    get:
+      tags:
+      - Reportes
+      summary: 'Inventario: stock bajo y valorización por categoría'
+      description: '**Roles:** Admin, Bodeguero'
+      parameters:
+      - $ref: '#/components/parameters/Formato'
+      responses:
+        '200':
+          description: Reporte (JSON) o CSV con los productos en stock bajo
+          content:
+            application/json:
+              schema:
+                type: object
+            text/csv:
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/NoAutenticado'
+        '403':
+          $ref: '#/components/responses/SinPermiso'
+        '502':
+          $ref: '#/components/responses/DatosNoDisponible'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+      example: 1
+    Offset:
+      name: offset
+      in: path
+      required: true
+      description: Registros a saltar (0 = primera página)
+      schema:
+        type: integer
+        minimum: 0
+      example: 0
+    Limit:
+      name: limit
+      in: path
+      required: true
+      description: Tamaño de página (1 a 100)
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+      example: 10
+    Desde:
+      name: desde
+      in: query
+      required: false
+      description: 'Fecha inicial AAAA-MM-DD (por defecto: hace 29 días)'
+      schema:
+        type: string
+        format: date
+        example: '2026-10-01'
+    Hasta:
+      name: hasta
+      in: query
+      required: false
+      description: 'Fecha final AAAA-MM-DD (por defecto: hoy)'
+      schema:
+        type: string
+        format: date
+        example: '2026-11-30'
+    Formato:
+      name: formato
+      in: query
+      required: false
+      description: '`csv` descarga el reporte como archivo para Excel'
+      schema:
+        type: string
+        enum:
+        - json
+        - csv
+  responses:
+    BadRequest:
+      description: El cuerpo no es un JSON válido
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Errores'
+    NoAutenticado:
+      description: Token inválido, vencido o ausente
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    SinPermiso:
+      description: El rol del usuario no tiene permiso
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NoEncontrado:
+      description: Recurso no encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Conflicto:
+      description: Conflicto con los datos existentes (duplicado, registros asociados, stock)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Validacion:
+      description: Datos inválidos
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Errores'
+    DatosNoDisponible:
+      description: La capa de datos no está disponible
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Producto no encontrado.
+    Errores:
+      type: object
+      properties:
+        errores:
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            precio_venta: El precio de venta no puede ser menor que el precio de compra.
+    Mensaje:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Eliminado exitosamente.
+    Paginacion:
+      type: object
+      properties:
+        offset:
+          type: integer
+          example: 0
+        limit:
+          type: integer
+          example: 10
+        total:
+          type: integer
+          example: 24
+    Login:
+      type: object
+      required:
+      - username
+      - password
+      properties:
+        username:
+          type: string
+          example: administrador
+        password:
+          type: string
+          format: password
+          example: Admin2026#
+    Sesion:
+      type: object
+      properties:
+        token:
+          type: string
+        token_type:
+          type: string
+          example: Bearer
+        expires_in:
+          type: integer
+          example: 3600
+        user:
+          $ref: '#/components/schemas/Perfil'
+    Perfil:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        nombre_completo:
+          type: string
+        rol_id:
+          type: integer
+        rol:
+          type: string
+          enum:
+          - Admin
+          - Vendedor
+          - Bodeguero
+    Rol:
+      type: object
+      properties:
+        id:
+          type: integer
+        nombre:
+          type: string
+        descripcion:
+          type: string
+    Usuario:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 2
+        username:
+          type: string
+          example: vendedor01
+        nombre_completo:
+          type: string
+          example: Daniel Brenes Mora
+        correo:
+          type: string
+          format: email
+        rol_id:
+          type: integer
+          example: 2
+        rol:
+          type: string
+          example: Vendedor
+        activo:
+          type: boolean
+        creado_en:
+          type: string
+          format: date-time
+    UsuarioCrear:
+      type: object
+      required:
+      - username
+      - password
+      - nombre_completo
+      - correo
+      - rol_id
+      properties:
+        username:
+          type: string
+          pattern: ^[a-z0-9]{8,16}$
+          example: vendedor05
+        password:
+          type: string
+          minLength: 8
+          maxLength: 64
+          description: Mayúscula, minúscula, número y símbolo (#$@*)
+          example: Ventas2026#
+        nombre_completo:
+          type: string
+          minLength: 6
+          maxLength: 150
+          example: Juan Pérez Mora
+        correo:
+          type: string
+          format: email
+          example: juan@inventario.cr
+        rol_id:
+          type: integer
+          example: 2
+        activo:
+          type: boolean
+          default: true
+    Categoria:
+      type: object
+      properties:
+        id:
+          type: integer
+        nombre:
+          type: string
+          example: Bebidas
+        descripcion:
+          type: string
+          nullable: true
+        activo:
+          type: boolean
+        productos_count:
+          type: integer
+          example: 4
+    CategoriaCrear:
+      type: object
+      required:
+      - nombre
+      properties:
+        nombre:
+          type: string
+          minLength: 3
+          maxLength: 100
+          example: Mascotas
+        descripcion:
+          type: string
+          maxLength: 255
+        activo:
+          type: boolean
+    Proveedor:
+      type: object
+      properties:
+        id:
+          type: integer
+        cedula_juridica:
+          type: string
+          example: '3101123456'
+        nombre:
+          type: string
+          example: Distribuidora Caribe S.A.
+        telefono:
+          type: string
+          nullable: true
+          example: 2758-1020
+        correo:
+          type: string
+          nullable: true
+        direccion:
+          type: string
+          nullable: true
+        activo:
+          type: boolean
+        productos_count:
+          type: integer
+    ProveedorCrear:
+      type: object
+      required:
+      - cedula_juridica
+      - nombre
+      properties:
+        cedula_juridica:
+          type: string
+          pattern: ^3[0-9]{9}$
+          example: '3101999888'
+        nombre:
+          type: string
+          example: Mascotas del Caribe S.A.
+        telefono:
+          type: string
+          pattern: ^[2-9][0-9]{3}-[0-9]{4}$
+          example: 2758-9999
+        correo:
+          type: string
+          format: email
+        direccion:
+          type: string
+          maxLength: 255
+        activo:
+          type: boolean
+    Producto:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 6
+        codigo:
+          type: string
+          example: '7441002000010'
+        nombre:
+          type: string
+          example: Café molido 500 g
+        descripcion:
+          type: string
+          nullable: true
+        categoria_id:
+          type: integer
+        categoria_nombre:
+          type: string
+          example: Bebidas
+        proveedor_id:
+          type: integer
+          nullable: true
+        proveedor_nombre:
+          type: string
+          nullable: true
+        precio_compra:
+          type: number
+          example: 2600
+        precio_venta:
+          type: number
+          example: 3400
+        stock:
+          type: integer
+          example: 22
+        stock_minimo:
+          type: integer
+          example: 8
+        stock_bajo:
+          type: boolean
+        imagen_url:
+          type: string
+          nullable: true
+        activo:
+          type: boolean
+        creado_en:
+          type: string
+          format: date-time
+    ProductoCrear:
+      type: object
+      required:
+      - codigo
+      - nombre
+      - categoria_id
+      - precio_compra
+      - precio_venta
+      properties:
+        codigo:
+          type: string
+          pattern: ^[A-Za-z0-9-]{3,50}$
+          example: '7441009000013'
+        nombre:
+          type: string
+          example: Galletas de avena 300 g
+        descripcion:
+          type: string
+        categoria_id:
+          type: integer
+          example: 6
+        proveedor_id:
+          type: integer
+          example: 5
+        precio_compra:
+          type: number
+          minimum: 0
+          example: 900
+        precio_venta:
+          type: number
+          description: Debe ser mayor o igual al precio de compra
+          example: 1250
+        stock:
+          type: integer
+          minimum: 0
+          description: Stock inicial (queda en la bitácora)
+          example: 30
+        stock_minimo:
+          type: integer
+          minimum: 0
+          example: 8
+        imagen_url:
+          type: string
+          format: uri
+        activo:
+          type: boolean
+    ProductoActualizar:
+      type: object
+      description: 'Igual que ProductoCrear, todos opcionales. **No incluye `stock`**: el stock solo cambia con ventas o movimientos.'
+      properties:
+        codigo:
+          type: string
+        nombre:
+          type: string
+        descripcion:
+          type: string
+        categoria_id:
+          type: integer
+        proveedor_id:
+          type: integer
+          nullable: true
+        precio_compra:
+          type: number
+        precio_venta:
+          type: number
+        stock_minimo:
+          type: integer
+        imagen_url:
+          type: string
+        activo:
+          type: boolean
+    Cliente:
+      type: object
+      properties:
+        id:
+          type: integer
+        cedula:
+          type: string
+          example: '702340567'
+        nombre_completo:
+          type: string
+          example: Ana Lucía Vargas Sánchez
+        telefono:
+          type: string
+          nullable: true
+        correo:
+          type: string
+          nullable: true
+        direccion:
+          type: string
+          nullable: true
+        latitud:
+          type: number
+          nullable: true
+          example: 9.9913
+        longitud:
+          type: number
+          nullable: true
+          example: -83.0359
+        creado_en:
+          type: string
+          format: date-time
+    ClienteCrear:
+      type: object
+      required:
+      - cedula
+      - nombre_completo
+      properties:
+        cedula:
+          type: string
+          description: 9 dígitos o DIMEX de 12 iniciando con 1
+          example: '703330444'
+        nombre_completo:
+          type: string
+          minLength: 11
+          example: María José Brown
+        telefono:
+          type: string
+          example: 8333-4444
+        correo:
+          type: string
+          format: email
+        direccion:
+          type: string
+        latitud:
+          type: number
+          minimum: -90
+          maximum: 90
+          description: GPS de la app móvil (junto con longitud)
+        longitud:
+          type: number
+          minimum: -180
+          maximum: 180
+    LineaVenta:
+      type: object
+      required:
+      - producto_id
+      - cantidad
+      properties:
+        producto_id:
+          type: integer
+          example: 1
+        cantidad:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          example: 2
+    VentaCrear:
+      type: object
+      required:
+      - detalle
+      description: El precio de cada línea lo toma el servidor del catálogo (precio de venta vigente). IVA 13 %.
+      properties:
+        cliente_id:
+          type: integer
+          nullable: true
+          description: Omitir para cliente de contado
+          example: 1
+        metodo_pago:
+          type: string
+          enum:
+          - Efectivo
+          - Tarjeta
+          - SINPE Móvil
+          - Transferencia
+          default: Efectivo
+        descuento_porcentaje:
+          type: number
+          minimum: 0
+          maximum: 50
+          default: 0
+        observaciones:
+          type: string
+          maxLength: 255
+        detalle:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/LineaVenta'
+    VentaActualizar:
+      type: object
+      description: Solo campos que no afectan montos ni inventario.
+      properties:
+        metodo_pago:
+          type: string
+          enum:
+          - Efectivo
+          - Tarjeta
+          - SINPE Móvil
+          - Transferencia
+        cliente_id:
+          type: integer
+          nullable: true
+        observaciones:
+          type: string
+    Venta:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 141
+        fecha:
+          type: string
+          format: date-time
+        cliente_id:
+          type: integer
+          nullable: true
+        cliente_nombre:
+          type: string
+          nullable: true
+        usuario_id:
+          type: integer
+        vendedor_nombre:
+          type: string
+        metodo_pago:
+          type: string
+        subtotal:
+          type: number
+          example: 7700
+        descuento:
+          type: number
+          example: 0
+        impuesto:
+          type: number
+          example: 1001
+        total:
+          type: number
+          example: 8701
+        estado:
+          type: string
+          enum:
+          - Completada
+          - Anulada
+        observaciones:
+          type: string
+          nullable: true
+        detalle:
+          type: array
+          items:
+            type: object
+            properties:
+              producto_id:
+                type: integer
+              codigo:
+                type: string
+              producto:
+                type: string
+              cantidad:
+                type: integer
+              precio_unitario:
+                type: number
+              subtotal:
+                type: number
+    Movimiento:
+      type: object
+      properties:
+        id:
+          type: integer
+        fecha:
+          type: string
+          format: date-time
+        producto_id:
+          type: integer
+        producto_codigo:
+          type: string
+        producto_nombre:
+          type: string
+        tipo:
+          type: string
+          enum:
+          - Entrada
+          - Salida
+          - Ajuste
+          - Venta
+          - Anulación
+        cantidad:
+          type: integer
+        stock_anterior:
+          type: integer
+        stock_nuevo:
+          type: integer
+        motivo:
+          type: string
+        venta_id:
+          type: integer
+          nullable: true
+        usuario_id:
+          type: integer
+          nullable: true
+        usuario_nombre:
+          type: string
+          nullable: true
+    MovimientoCrear:
+      type: object
+      required:
+      - producto_id
+      - tipo
+      - cantidad
+      - motivo
+      properties:
+        producto_id:
+          type: integer
+          example: 7
+        tipo:
+          type: string
+          enum:
+          - Entrada
+          - Salida
+          - Ajuste
+        cantidad:
+          type: integer
+          minimum: 0
+          description: 'Entrada/Salida: unidades (>0). Ajuste: stock final contado.'
+          example: 24
+        motivo:
+          type: string
+          minLength: 3
+          example: Compra a Distribuidora Caribe
+    Reporte:
+      type: object
+      properties:
+        filtros:
+          type: object
+        resumen:
+          type: object
+        data:
+          type: array
+          items:
+            type: object

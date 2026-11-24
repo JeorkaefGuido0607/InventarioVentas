@@ -1,0 +1,82 @@
+### Movimientos de inventario y reportes
+@host = http://localhost:9090/api
+@token = {{login.response.body.token}}
+
+# @name login
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{ "username": "administrador", "password": "Admin2026#" }
+###
+
+### ---------------- Movimientos (bitácora / kardex) ----------------
+GET {{host}}/movimientos/filter/0/10?producto_id=7&tipo=&desde=&hasta=
+Authorization: Bearer {{token}}
+###
+
+### Entrada: compra a proveedor
+POST {{host}}/movimientos
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "producto_id": 7, "tipo": "Entrada", "cantidad": 24, "motivo": "Compra a Distribuidora Caribe" }
+###
+
+### Salida: merma / producto dañado
+POST {{host}}/movimientos
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "producto_id": 7, "tipo": "Salida", "cantidad": 2, "motivo": "Botellas dañadas en bodega" }
+###
+
+### Ajuste: fija el stock según el conteo físico
+POST {{host}}/movimientos
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "producto_id": 7, "tipo": "Ajuste", "cantidad": 20, "motivo": "Conteo físico de fin de mes" }
+###
+
+### ---------------- Reportes ----------------
+GET {{host}}/reportes/dashboard
+Authorization: Bearer {{token}}
+###
+
+GET {{host}}/reportes/ventas-periodo?desde=2026-10-01&hasta=2026-11-30&agrupar=dia
+Authorization: Bearer {{token}}
+###
+
+GET {{host}}/reportes/ventas-periodo?desde=2026-01-01&hasta=2026-12-31&agrupar=mes
+Authorization: Bearer {{token}}
+###
+
+GET {{host}}/reportes/productos-mas-vendidos?limite=5
+Authorization: Bearer {{token}}
+###
+
+GET {{host}}/reportes/ventas-categoria
+Authorization: Bearer {{token}}
+###
+
+GET {{host}}/reportes/ventas-vendedor
+Authorization: Bearer {{token}}
+###
+
+GET {{host}}/reportes/ventas-metodo-pago
+Authorization: Bearer {{token}}
+###
+
+GET {{host}}/reportes/inventario
+Authorization: Bearer {{token}}
+###
+
+### Exportar a CSV (se abre en Excel)
+GET {{host}}/reportes/productos-mas-vendidos?formato=csv
+Authorization: Bearer {{token}}
+###
+
+### Anular una venta (solo Admin): devuelve el stock
+DELETE {{host}}/ventas/1
+Authorization: Bearer {{token}}
+###

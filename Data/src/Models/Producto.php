@@ -1,0 +1,44 @@
+<?php
+declare(strict_types=1);
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Producto extends Model {
+    protected $table = 'productos';
+    public $timestamps = false;
+
+    protected $fillable = [
+        'codigo',
+        'nombre',
+        'descripcion',
+        'categoria_id',
+        'proveedor_id',
+        'precio_compra',
+        'precio_venta',
+        'stock',
+        'stock_minimo',
+        'imagen_url',
+        'activo'
+    ];
+
+    protected $casts = [
+        'id' => 'integer',
+        'categoria_id' => 'integer',
+        'proveedor_id' => 'integer',
+        'precio_compra' => 'float',
+        'precio_venta' => 'float',
+        'stock' => 'integer',
+        'stock_minimo' => 'integer',
+        'activo' => 'boolean',
+    ];
+
+    public function categoria() {
+        return $this->belongsTo(Categoria::class, 'categoria_id');
+    }
+
+    public function proveedor() {
+        return $this->belongsTo(Proveedor::class, 'proveedor_id');
+    }
+}

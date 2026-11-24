@@ -1,0 +1,70 @@
+services:
+    db:
+        image: mysql:9.7
+        container_name: inv_base_datos
+        environment:
+            MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_password
+            MYSQL_DATABASE: inventario_ventas
+            TZ: America/Costa_Rica
+        ports:
+            - 3307:3306
+        volumes:
+            - ./db_dump:/docker-entrypoint-initdb.d
+            - mysql_data:/var/lib/mysql
+        secrets:
+            - db_password
+        # "healthy" solo cuando MySQL terminó de ejecutar los scripts de db_dump
+        healthcheck:
+            test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$(cat /run/secrets/db_password)\" --silent"]
+            interval: 5s
+            timeout: 5s
+            retries: 30
+            start_period: 30s
+
+    web_datos:
+        container_name: inv_web_datos
+        environment:
+            TZ: America/Costa_Rica
+        volumes:
+            - ./Data/public:/var/www/html/public
+            - ./Data/src:/var/www/html/src
+        build:
+            context: .
+            dockerfile: ./Data/Dockerfile
+        ports:
+            - 8080:80
+        depends_on:
+            db:
+                condition: service_healthy
+
+    web_negocio:
+        container_name: inv_web_negocio
+        environment:
+            TZ: America/Costa_Rica
+        volumes:
+            - ./Business/public:/var/www/html/public
+            - ./Business/src:/var/www/html/src
+            - ./Business/docs:/var/www/html/docs
+            - ./Business/tests:/var/www/html/tests
+        build:
+            context: .
+            dockerfile: ./Business/Dockerfile
+        ports:
+            - 9090:80
+        depends_on:
+            - web_datos
+
+
+   # web_presentacion:
+      #  container_name: inv_web_presentacion
+       # build:
+         #   context: ./Presentation
+         #   dockerfile: Dockerfile
+       # ports:
+         #   - 4200:80
+secrets:
+    db_password:
+        file: ./db_password.txt
+
+volumes:
+    mysql_data:

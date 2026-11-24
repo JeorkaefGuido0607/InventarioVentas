@@ -1,0 +1,21 @@
+# Dependencias (se instalan dentro de los contenedores)
+vendor/
+node_modules/
+
+# Caché y resultados de pruebas
+.phpunit.cache/
+.phpunit.result.cache
+coverage/
+
+# Angular / móvil (cuando se agreguen)
+dist/
+.angular/
+
+# Sistema operativo / editores
+.DS_Store
+Thumbs.db
+.idea/
+
+# Nota: Data/.env, Business/.env y db_password.txt SÍ se versionan a propósito,
+# para que el proyecto levante con "docker compose up -d" recién clonado
+# (son credenciales de desarrollo). En producción se reemplazan por secretos.

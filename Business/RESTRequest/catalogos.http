@@ -1,0 +1,106 @@
+### Categorías, proveedores, clientes y usuarios
+@host = http://localhost:9090/api
+@token = {{login.response.body.token}}
+
+# @name login
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{ "username": "administrador", "password": "Admin2026#" }
+###
+
+### ---------------- Categorías ----------------
+GET {{host}}/categorias
+Authorization: Bearer {{token}}
+###
+
+GET {{host}}/categorias/filter/0/5?nombre=be
+Authorization: Bearer {{token}}
+###
+
+POST {{host}}/categorias
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "nombre": "Mascotas", "descripcion": "Alimento y accesorios para mascotas" }
+###
+
+PUT {{host}}/categorias/9
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "descripcion": "Alimento, arena y accesorios" }
+###
+
+DELETE {{host}}/categorias/9
+Authorization: Bearer {{token}}
+###
+
+### ---------------- Proveedores ----------------
+GET {{host}}/proveedores/filter/0/10?nombre=&cedula_juridica=
+Authorization: Bearer {{token}}
+###
+
+POST {{host}}/proveedores
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "cedula_juridica": "3101999888",
+    "nombre": "Mascotas del Caribe S.A.",
+    "telefono": "2758-9999",
+    "correo": "ventas@mascotas.cr",
+    "direccion": "Limón centro"
+}
+###
+
+### ---------------- Clientes ----------------
+GET {{host}}/clientes/filter/0/10?nombre=&cedula=
+Authorization: Bearer {{token}}
+###
+
+### latitud y longitud vienen del GPS de la app móvil
+POST {{host}}/clientes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "cedula": "703330444",
+    "nombre_completo": "María José Brown",
+    "telefono": "8333-4444",
+    "correo": "mjbrown@correo.cr",
+    "direccion": "Limón, barrio Cristóbal Colón",
+    "latitud": 9.9901,
+    "longitud": -83.0312
+}
+###
+
+### ---------------- Usuarios (solo Admin) ----------------
+GET {{host}}/roles
+Authorization: Bearer {{token}}
+###
+
+GET {{host}}/usuarios/filter/0/10?rol_id=2
+Authorization: Bearer {{token}}
+###
+
+POST {{host}}/usuarios
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "username": "vendedor05",
+    "password": "Ventas2026#",
+    "nombre_completo": "Juan Pérez Mora",
+    "correo": "juan@inventario.cr",
+    "rol_id": 2
+}
+###
+
+### Desactivar un usuario (en lugar de borrarlo si ya tiene ventas)
+PUT {{host}}/usuarios/3
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "activo": false }
+###

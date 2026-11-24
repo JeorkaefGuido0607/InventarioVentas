@@ -1,0 +1,30 @@
+### Pruebas directas a la capa de datos (puerto 8080, sin JWT).
+### En uso normal solo la capa de negocio llama a estos endpoints.
+@host = http://localhost:8080/api
+
+POST {{host}}/auth/credentials
+Content-Type: application/json
+
+{ "username": "administrador", "password": "Admin2026#" }
+###
+
+GET {{host}}/productos/filter/0/5?stock_bajo=true
+###
+
+GET {{host}}/productos/codigo/7441002000010
+###
+
+GET {{host}}/ventas/1
+###
+
+GET {{host}}/movimientos/filter/0/10?producto_id=7
+###
+
+GET {{host}}/reportes/dashboard
+###
+
+GET {{host}}/reportes/ventas-periodo?desde=2026-11-01&hasta=2026-11-30
+###
+
+GET {{host}}/reportes/inventario
+###
