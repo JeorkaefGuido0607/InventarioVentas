@@ -27,11 +27,11 @@ const CLAVE_EXPIRA = 'expira';
 export class AuthService {
   private http = inject(HttpClient);
 
-  // Copia en memoria de la sesión: así el resto de la app la lee al instante
+  // Copia en memoria de la sesión así el resto de la app la lee al instante
   readonly token = signal<string | null>(null);
   readonly usuario = signal<Usuario | null>(null);
 
-  // Se llama al abrir la app: recupera la sesión guardada si no ha vencido
+  // Se llama al abrir la app recupera la sesión guardada si no ha vencido
   async cargarSesion(): Promise<void> {
     const { value: token } = await Preferences.get({ key: CLAVE_TOKEN });
     const { value: usuario } = await Preferences.get({ key: CLAVE_USUARIO });

@@ -6,6 +6,6 @@ export const authGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
-  // Con sesión deja pasar; sin sesión redirige al login
+
   return auth.token() ? true : router.createUrlTree(['/login']);
 };

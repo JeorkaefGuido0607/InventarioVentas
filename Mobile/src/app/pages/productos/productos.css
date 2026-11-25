@@ -1,0 +1,85 @@
+.productos {
+    padding: 16px;
+    background: #f5f0ff;
+    min-height: 100vh;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+h1 {
+    color: #6535a5;
+    font-size: 24px;
+    margin: 0;
+}
+
+a {
+    color: #7542b8;
+}
+
+form {
+    display: flex;
+    gap: 8px;
+    margin: 16px 0;
+}
+
+input {
+    flex: 1;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #b9a5d6;
+    border-radius: 10px;
+}
+
+button {
+    padding: 12px 16px;
+    font-size: 16px;
+    border: 0;
+    border-radius: 10px;
+    background: #7542b8;
+    color: #fff;
+}
+
+button:disabled {
+    opacity: 0.6;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+li {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 12px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(91, 45, 145, 0.12);
+}
+
+li.bajo {
+    border-left: 5px solid #c62828;
+}
+
+.mas {
+    width: 100%;
+    margin-top: 16px;
+}
+
+.error {
+    color: #c62828;
+}
+.limpiar {
+  background: transparent;
+  color: #7542b8;
+  border: 1px solid #7542b8;
+}
