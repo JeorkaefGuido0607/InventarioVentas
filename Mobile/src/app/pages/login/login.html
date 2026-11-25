@@ -1,0 +1,21 @@
+<main class="login">
+  <section class="tarjeta">
+    <h1>Inventario y Ventas</h1>
+
+    <form (ngSubmit)="entrar()">
+      <label for="usuario">Usuario</label>
+      <input id="usuario" name="usuario" type="text" autocomplete="username" [(ngModel)]="username" />
+
+      <label for="clave">Contraseña</label>
+      <input id="clave" name="clave" type="password" autocomplete="current-password" [(ngModel)]="password" />
+
+      @if (error()) {
+        <p class="error" role="alert">{{ error() }}</p>
+      }
+
+      <button type="submit" [disabled]="cargando()">
+        {{ cargando() ? 'Entrando...' : 'Entrar' }}
+      </button>
+    </form>
+  </section>
+</main>

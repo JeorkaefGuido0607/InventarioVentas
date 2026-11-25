@@ -1,0 +1,49 @@
+.login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 24px;
+  background: #f5f0ff;
+}
+
+.tarjeta {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 8px 25px rgba(91, 45, 145, 0.15);
+}
+
+h1 {
+  margin: 0 0 24px;
+  text-align: center;
+  color: #6535a5;
+  font-size: 26px;
+  font-weight: 600;
+}
+
+form { display: flex; flex-direction: column; gap: 8px; }
+label { font-weight: 600; }
+
+input {
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #b9a5d6;
+  border-radius: 10px;
+}
+
+button {
+  margin-top: 12px;
+  min-height: 48px;
+  font-size: 16px;
+  border: 0;
+  border-radius: 10px;
+  background: #7542b8;
+  color: #ffffff;
+}
+button:active { background: #5e3297; }
+button:disabled { opacity: 0.6; }
+
+.error { margin: 4px 0 0; color: #c62828; font-size: 14px; }

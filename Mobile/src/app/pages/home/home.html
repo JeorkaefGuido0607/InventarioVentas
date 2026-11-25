@@ -1,0 +1,5 @@
+<main style="padding: 24px">
+  <h1>Hola, {{ auth.usuario()?.nombre_completo }}</h1>
+  <p>Rol: {{ auth.usuario()?.rol }}</p>
+  <button type="button" (click)="salir()">Cerrar sesión</button>
+</main>
