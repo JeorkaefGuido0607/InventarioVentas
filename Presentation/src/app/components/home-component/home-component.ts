@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+
+import { Component, inject } from '@angular/core';
+import { TokenService } from '../../shared/services/token-service';
 
 @Component({
   imports: [],
@@ -6,4 +8,8 @@ import { Component } from '@angular/core';
   styleUrl: './home-component.css',
   templateUrl: './home-component.html',
 })
-export class HomeComponent {}
+export class HomeComponent {
+  private readonly srvTokens = inject(TokenService);
+
+  public usuarioActual = this.srvTokens.decodeToken() ?? {};
+}

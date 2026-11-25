@@ -38,6 +38,6 @@ export class AuthService {
 
   public logout(): void {
     this.doLogOut();
-    this.router.navigate(['/login']);
+    this.router.navigate(['/home']);
   }
 }

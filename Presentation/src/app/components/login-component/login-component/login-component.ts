@@ -20,6 +20,7 @@ export class LoginComponent implements OnInit {
     });
   }
   ngOnInit(): void {
-    this.mostrarDialogo();
-  }
+  console.log('LoginComponent iniciado');
+  this.mostrarDialogo();
+}
 }

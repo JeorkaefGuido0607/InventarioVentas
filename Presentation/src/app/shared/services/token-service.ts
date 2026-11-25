@@ -24,7 +24,7 @@ export class TokenService {
         return helper.decodeToken(this.token ?? '');
     }
 
-    public jwtTokenExp(): boolean | Promise<boolean> {
+    public jwtTokenExp(): boolean {
         const helper = new JwtHelperService();
         return helper.isTokenExpired(this.token ?? '');
     }
