@@ -1,0 +1,29 @@
+<form [formRoot]="frmLogin">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Iniciar sesión</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <mat-form-field appearance="outline">
+        <mat-label>Usuario</mat-label>
+        <input matInput [formField]="frmLogin.username">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Contraseña</mat-label>
+        <input matInput type="password" [formField]="frmLogin.password">
+      </mat-form-field>
+
+      @if (mostrarError()) {
+        <p class="error">Usuario o contraseña incorrectos.</p>
+      }
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button mat-raised-button type="submit">
+        Iniciar sesión
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</form>
