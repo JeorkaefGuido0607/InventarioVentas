@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Inventario Ventas</string>
+    <string name="title_activity_main">Inventario Ventas</string>
+    <string name="package_name">com.angelica.inventarioventas</string>
+    <string name="custom_url_scheme">com.angelica.inventarioventas</string>
+</resources>
