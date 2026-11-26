@@ -2,5 +2,6 @@
   <h1>Hola, {{ auth.usuario()?.nombre_completo }}</h1>
   <p>Rol: {{ auth.usuario()?.rol }}</p>
   <p><a routerLink="/productos">Ver productos</a></p>
+  <p><a routerLink="/escaner">Escáner</a></p>
   <button type="button" (click)="salir()">Cerrar sesión</button>
 </main>

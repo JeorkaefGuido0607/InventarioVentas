@@ -184,6 +184,9 @@ importers:
       '@angular/router':
         specifier: ^22.3.0
         version: 22.3.0(@angular/common@22.3.0(@angular/core@22.3.0(@angular/compiler@22.3.0)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@22.3.0(@angular/compiler@22.3.0)(rxjs@7.8.2))(@angular/platform-browser@22.3.0(@angular/common@22.3.0(@angular/core@22.3.0(@angular/compiler@22.3.0)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@22.3.0(@angular/compiler@22.3.0)(rxjs@7.8.2)))(rxjs@7.8.2)
+      '@capacitor-mlkit/barcode-scanning':
+        specifier: ^8.2.2
+        version: 8.2.2(@capacitor/core@8.6.2)
       '@capacitor/android':
         specifier: ^8.6.2
         version: 8.6.2(@capacitor/core@8.6.2)
@@ -429,6 +432,11 @@ packages:
 
   '@bufbuild/protobuf@2.17.0':
     resolution: {integrity: sha512-hcPkSz6D7MiTU/5VBBhK+kxaYDoOdQ6yJRFJ3kS8Nydp+VZXfg1vrpABKPNod8bXMufsVCmiUJVIKFzCzta4uw==}
+
+  '@capacitor-mlkit/barcode-scanning@8.2.2':
+    resolution: {integrity: sha512-ifQbo09HDAveFpu89H9jhKbYw1sISdHCpXOi3qJDp/geVuxtJC2GDffBLAL3R6mXNDSjm8jO00AIP2Z1GlV8hQ==}
+    peerDependencies:
+      '@capacitor/core': '>=8.0.0'
 
   '@capacitor/android@8.6.2':
     resolution: {integrity: sha512-dWXnXmOVTtxU91n5h11MzoQ7PAMjyzU1qguw0mBJZiwSuhGvLKTG/IlsQ75H8qeE0a1acV2f573x15wYvyzuVA==}
@@ -3115,6 +3123,10 @@ snapshots:
       '@babel/helper-validator-identifier': 8.0.6
 
   '@bufbuild/protobuf@2.17.0': {}
+
+  '@capacitor-mlkit/barcode-scanning@8.2.2(@capacitor/core@8.6.2)':
+    dependencies:
+      '@capacitor/core': 8.6.2
 
   '@capacitor/android@8.6.2(@capacitor/core@8.6.2)':
     dependencies:
