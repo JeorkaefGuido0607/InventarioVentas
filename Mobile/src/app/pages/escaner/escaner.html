@@ -1,0 +1,32 @@
+<main class="escaner">
+    <header>
+        <h1>Escáner</h1>
+        <a routerLink="/inicio">Inicio</a>
+    </header>
+
+    @if (escaner.disponible) {
+    <button type="button" class="camara" (click)="escanear()">Escanear con la cámara</button>
+    }
+
+    <form (ngSubmit)="buscar()">
+        <input name="codigo" type="text" inputmode="numeric" placeholder="Código de barras" autocomplete="off"
+            [value]="codigo()" (input)="codigo.set($any($event.target).value)" />
+        <button type="submit" [disabled]="cargando()">Buscar</button>
+    </form>
+
+    @if (mensaje()) {
+    <p class="mensaje" role="alert">{{ mensaje() }}</p>
+    }
+
+    @if (producto(); as p) {
+    <section class="resultado" [class.bajo]="p.stock_bajo">
+        <h2>{{ p.nombre }}</h2>
+        <p class="detalle">{{ p.categoria_nombre }} · {{ p.codigo }}</p>
+        <p class="precio">{{ p.precio_venta | currency: 'CRC' : '₡' : '1.0-0' }}</p>
+        <p>Stock: <strong>{{ p.stock }}</strong> (mínimo {{ p.stock_minimo }})</p>
+        @if (p.stock_bajo) {
+        <p class="alerta">Stock bajo</p>
+        }
+    </section>
+    }
+</main>

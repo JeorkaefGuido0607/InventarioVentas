@@ -1,0 +1,62 @@
+<main class="inicio">
+
+  <!-- Encabezado -->
+  <header class="barra-superior">
+    <div class="titulo">
+      <h1>Inventario y Ventas</h1>
+      <p>Panel principal</p>
+    </div>
+
+    <button class="icono-salir" type="button" (click)="salir()" title="Cerrar sesión">
+      <span class="material-symbols-rounded">logout</span>
+    </button>
+  </header>
+
+  <!-- Bienvenida -->
+  <section class="bienvenida">
+    <span class="etiqueta">BIENVENIDO</span>
+
+    <h2>¡Hola, {{ auth.usuario()?.nombre_completo }}!</h2>
+
+    <p class="rol">Rol: {{ auth.usuario()?.rol }}</p>
+
+    <p class="mensaje">¿Qué deseas hacer hoy?</p>
+  </section>
+
+  <!-- Accesos -->
+  <section class="accesos">
+    <h3>Accesos principales</h3>
+
+    <div class="tarjetas">
+
+      <a class="tarjeta" routerLink="/productos">
+        <div class="icono-tarjeta">
+          <span class="material-symbols-rounded">inventory_2</span>
+        </div>
+
+        <h4>Productos</h4>
+        <p>Consultar productos</p>
+
+        <span class="material-symbols-rounded flecha">
+          arrow_forward
+        </span>
+      </a>
+
+      <a class="tarjeta" routerLink="/escaner">
+        <div class="icono-tarjeta">
+          <span class="material-symbols-rounded">barcode_scanner</span>
+        </div>
+
+        <h4>Escáner</h4>
+        <p>Leer código de barras</p>
+
+        <span class="material-symbols-rounded flecha">
+          arrow_forward
+        </span>
+      </a>
+
+    </div>
+  </section>
+
+
+</main>

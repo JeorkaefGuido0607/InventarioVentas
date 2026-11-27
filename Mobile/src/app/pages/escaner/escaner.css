@@ -1,0 +1,99 @@
+.escaner {
+    padding: 16px;
+    background: #f5f0ff;
+    min-height: 100vh;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+h1 {
+    margin: 0;
+    color: #6535a5;
+    font-size: 26px;
+}
+
+a {
+    color: #7542b8;
+    font-weight: 600;
+}
+
+.camara {
+    width: 100%;
+    margin: 16px 0 8px;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    border: 0;
+    border-radius: 12px;
+    background: #7542b8;
+    color: #fff;
+}
+
+form {
+    display: flex;
+    gap: 8px;
+    margin: 16px 0;
+}
+
+input {
+    flex: 1;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #b9a5d6;
+    border-radius: 10px;
+}
+
+form button {
+    padding: 12px 16px;
+    font-size: 16px;
+    border: 0;
+    border-radius: 10px;
+    background: #7542b8;
+    color: #fff;
+}
+
+button:disabled {
+    opacity: 0.6;
+}
+
+.mensaje {
+    color: #c62828;
+}
+
+.resultado {
+    padding: 16px;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(91, 45, 145, 0.12);
+}
+
+.resultado.bajo {
+    border-left: 5px solid #c62828;
+}
+
+.resultado h2 {
+    margin: 0 0 4px;
+    font-size: 20px;
+}
+
+.detalle {
+    color: #6b6280;
+    font-size: 13px;
+    margin: 0 0 8px;
+}
+
+.precio {
+    font-size: 24px;
+    font-weight: 700;
+    color: #6535a5;
+    margin: 0 0 8px;
+}
+
+.alerta {
+    color: #c62828;
+    font-weight: 600;
+}

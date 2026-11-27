@@ -1,0 +1,76 @@
+
+<main class="productos">
+  <header>
+    <h1>
+      <a routerLink="/inicio" class="volver">
+        <span class="material-symbols-rounded">arrow_back</span>
+      </a>
+      Productos
+    </h1>
+  </header>
+
+  <form class="busqueda" (ngSubmit)="buscar()">
+    <span class="material-symbols-rounded">search</span>
+
+    <input
+      name="q"
+      type="search"
+      placeholder="Buscar producto..."
+      [value]="busqueda()"
+      (input)="alEscribir($any($event.target).value)"
+    />
+
+    <button type="submit">Buscar</button>
+
+    @if (busqueda()) {
+      <button
+        type="button"
+        class="limpiar"
+        (click)="limpiar()"
+      >
+        Limpiar
+      </button>
+    }
+  </form>
+
+  @if (error()) {
+    <p class="error" role="alert">{{ error() }}</p>
+  }
+
+  <ul>
+    @for (p of productos(); track p.id) {
+      <li [class.bajo]="p.stock_bajo">
+        <div class="producto-superior">
+          <strong class="nombre">{{ p.nombre }}</strong>
+
+          <div class="datos-producto">
+            <strong>
+              {{ p.precio_venta | currency: 'CRC' : '₡' : '1.0-0' }}
+            </strong>
+            <span>{{ p.stock }} unidades</span>
+          </div>
+        </div>
+
+        <span class="detalle">
+          {{ p.codigo }} · {{ p.categoria_nombre }}
+        </span>
+      </li>
+    } @empty {
+      @if (!cargando()) {
+        <li class="sin-productos">No hay productos.</li>
+      }
+    }
+  </ul>
+
+  @if (productos().length < total()) {
+    <button
+      type="button"
+      class="mas"
+      (click)="masResultados()"
+      [disabled]="cargando()"
+    >
+      Cargar más
+      <span class="material-symbols-rounded">keyboard_arrow_down</span>
+    </button>
+  }
+</main>

@@ -1,0 +1,61 @@
+
+<main class="login">
+
+  <section class="contenido-login">
+
+    <header class="encabezado">
+      <h1>Inventario y Ventas</h1>
+      <p>Control y administración de tu negocio</p>
+    </header>
+
+    <section class="tarjeta">
+
+      <div class="bienvenida">
+        <h2>¡Bienvenido!</h2>
+        <p>Ingresa tus datos para acceder al sistema.</p>
+      </div>
+
+      <form (ngSubmit)="entrar()">
+
+        <div class="campo">
+          <label for="usuario">Usuario</label>
+          <input
+            id="usuario"
+            name="usuario"
+            type="text"
+            placeholder="Ingrese su usuario"
+            autocomplete="username"
+            [(ngModel)]="username"
+          />
+        </div>
+
+        <div class="campo">
+          <label for="clave">Contraseña</label>
+          <input
+            id="clave"
+            name="clave"
+            type="password"
+            placeholder="Ingrese su contraseña"
+            autocomplete="current-password"
+            [(ngModel)]="password"
+          />
+        </div>
+
+        @if (error()) {
+          <p class="error" role="alert">{{ error() }}</p>
+        }
+
+        <button type="submit" [disabled]="cargando()">
+          {{ cargando() ? 'Entrando...' : 'Iniciar sesión' }}
+        </button>
+
+      </form>
+
+      <footer class="pie-tarjeta">
+        Sistema de Inventario y Ventas
+      </footer>
+
+    </section>
+
+  </section>
+</main>
