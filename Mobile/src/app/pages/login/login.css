@@ -1,49 +1,151 @@
+
 .login {
   min-height: 100vh;
   display: flex;
+  justify-content: center;
   align-items: center;
-  padding: 24px;
-  background: #f5f0ff;
+  padding: 30px 20px;
+  box-sizing: border-box;
+  background: #F7F6FB;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
 }
 
-.tarjeta {
+/* Contenido principal */
+.contenido-login {
   width: 100%;
   max-width: 420px;
-  margin: 0 auto;
-  padding: 24px;
-  background: #ffffff;
-  border-radius: 18px;
-  box-shadow: 0 8px 25px rgba(91, 45, 145, 0.15);
 }
 
-h1 {
-  margin: 0 0 24px;
+/* Encabezado */
+.encabezado {
   text-align: center;
-  color: #6535a5;
-  font-size: 26px;
+  margin-bottom: 28px;
+}
+
+.encabezado h1 {
+  color: #30205D;
+  font-size: 29px;
+  font-weight: 700;
+  margin: 0 0 12px;
+}
+
+
+.encabezado p {
+  color: #777777;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Tarjeta */
+.tarjeta {
+  width: 100%;
+  padding: 35px 32px 25px;
+  background: #FFFFFF;
+  border-radius: 18px;
+  box-shadow: 0 8px 30px rgba(48, 32, 93, 0.12);
+  box-sizing: border-box;
+}
+
+/* Bienvenida */
+.bienvenida {
+  margin-bottom: 28px;
+}
+
+.bienvenida h2 {
+  color: #30205D;
+  font-size: 23px;
+  margin: 0 0 8px;
+}
+
+.bienvenida p {
+  color: #777777;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Formulario */
+.campo {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.campo label {
+  color: #30205D;
+  font-size: 14px;
   font-weight: 600;
+  margin-bottom: 8px;
 }
 
-form { display: flex; flex-direction: column; gap: 8px; }
-label { font-weight: 600; }
-
-input {
-  padding: 12px;
-  font-size: 16px;
-  border: 1px solid #b9a5d6;
-  border-radius: 10px;
+.campo input {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid #D9D3E5;
+  border-radius: 9px;
+  outline: none;
+  box-sizing: border-box;
+  font-size: 14px;
+  color: #30205D;
+  background: #FFFFFF;
 }
 
-button {
-  margin-top: 12px;
-  min-height: 48px;
-  font-size: 16px;
-  border: 0;
-  border-radius: 10px;
-  background: #7542b8;
-  color: #ffffff;
+.campo input::placeholder {
+  color: #AAA3B8;
 }
-button:active { background: #5e3297; }
-button:disabled { opacity: 0.6; }
 
-.error { margin: 4px 0 0; color: #c62828; font-size: 14px; }
+.campo input:focus {
+  border-color: #6042A0;
+  box-shadow: 0 0 0 3px rgba(96, 66, 160, 0.12);
+}
+
+/* Mensaje de error */
+.error {
+  color: #C62828;
+  font-size: 13px;
+  margin: 0 0 15px;
+}
+
+/* Botón */
+.tarjeta button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 5px;
+  border: none;
+  border-radius: 9px;
+  background: #6042A0;
+  color: #FFFFFF;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.tarjeta button:hover {
+  background: #30205D;
+}
+
+.tarjeta button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Pie de tarjeta */
+.pie-tarjeta {
+  text-align: center;
+  color: #9992A7;
+  font-size: 12px;
+  margin-top: 25px;
+  padding-top: 18px;
+  border-top: 1px solid #EEEAF4;
+}
+
+/* Adaptación a móviles */
+@media (max-width: 480px) {
+  .tarjeta {
+    padding: 30px 22px 22px;
+  }
+
+  .encabezado h1 {
+    font-size: 25px;
+  }
+}

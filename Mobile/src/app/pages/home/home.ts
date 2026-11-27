@@ -6,6 +6,7 @@ import { AuthService } from '../../core/auth.service';
   selector: 'app-home',
   imports: [RouterLink],
   templateUrl: './home.html',
+  styleUrl: './home.css',
 })
 export class Home {
   auth = inject(AuthService);
