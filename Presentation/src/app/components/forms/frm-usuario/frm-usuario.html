@@ -1,0 +1,99 @@
+<div class="form-container">
+
+  <header class="form-header">
+    <div>
+      <h2>{{ modoEdicion ? 'Editar usuario' : 'Registrar usuario' }}</h2>
+      <p>
+        {{ modoEdicion
+          ? 'Modifica la información del usuario.'
+          : 'Completa la información del nuevo usuario.' }}
+      </p>
+    </div>
+
+    <button type="button" class="close-button" (click)="cancelar()">×</button>
+  </header>
+
+  <form [formGroup]="formulario" (ngSubmit)="guardar()">
+
+    <div class="form-group">
+      <label>Nombre completo</label>
+      <input type="text" formControlName="nombre_completo"
+        placeholder="Ej. María Fernanda López">
+
+      @if (formulario.controls.nombre_completo.touched && formulario.controls.nombre_completo.invalid) {
+        <small>Ingresa entre 2 y 4 palabras, utilizando solamente letras.</small>
+      }
+    </div>
+
+    <div class="form-group">
+      <label>Nombre de usuario</label>
+      <input type="text" formControlName="username"
+        placeholder="Ej. maria12345">
+
+      @if (formulario.controls.username.touched && formulario.controls.username.invalid) {
+        <small>Utiliza entre 8 y 16 caracteres: letras minúsculas y números.</small>
+      }
+    </div>
+
+    <div class="form-group">
+      <label>Correo electrónico</label>
+      <input type="email" formControlName="correo"
+        placeholder="usuario@correo.com">
+
+      @if (formulario.controls.correo.touched && formulario.controls.correo.invalid) {
+        <small>Ingresa un correo electrónico válido.</small>
+      }
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>
+          Contraseña {{ modoEdicion ? '(opcional)' : '' }}
+        </label>
+
+        <input type="password" formControlName="password"
+          [placeholder]="modoEdicion ? 'Nueva contraseña' : 'Contraseña'">
+
+        @if (formulario.controls.password.touched && formulario.controls.password.invalid) {
+          <small>Debe incluir mayúscula, minúscula, número y símbolo (#$@*). Mínimo 8 caracteres.</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label>Confirmar contraseña</label>
+        <input type="password" formControlName="confirmarPassword"
+          placeholder="Repetir contraseña">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Rol del usuario</label>
+
+      <select formControlName="rol_id">
+        <option [ngValue]="null" disabled>Selecciona un rol</option>
+
+        @for (rol of roles; track rol.id) {
+          <option [ngValue]="rol.id">{{ rol.nombre }}</option>
+        }
+      </select>
+    </div>
+
+    @if (mensajeError) {
+      <p class="error-message">{{ mensajeError }}</p>
+    }
+
+    <footer class="form-actions">
+      <button type="button" class="btn-secondary" (click)="cancelar()">
+        Cancelar
+      </button>
+
+      <button type="submit" class="btn-primary" [disabled]="cargando">
+        {{ cargando
+          ? 'Guardando...'
+          : modoEdicion ? 'Guardar cambios' : 'Registrar usuario' }}
+      </button>
+    </footer>
+
+  </form>
+</div>
+

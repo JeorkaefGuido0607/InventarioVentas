@@ -1,4 +1,122 @@
-<h2>Bienvenido a InventarioVentas</h2>
 
-<p>Usuario: {{ usuarioActual.username }}</p>
-<p>Rol: {{ usuarioActual.rol }}</p>
+<div class="dashboard">
+
+  <!-- Menú lateral -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">IV</div>
+      <div>
+        <h2>InventarioVentas</h2>
+        <span>Panel de gestión</span>
+      </div>
+    </div>
+
+    <div class="menu-section">
+      <span class="menu-title">MENÚ PRINCIPAL</span>
+
+      <a routerLink="/home" routerLinkActive="active">
+        <span class="menu-icon">⌂</span>
+        Inicio
+      </a>
+
+      @if (usuarioActual.rol === 'Administrador') {
+        <a routerLink="/admin">
+          <span class="menu-icon">⚙</span>
+          Administración
+        </a>
+      }
+
+      @if (usuarioActual.rol === 'Vendedor') {
+        <a routerLink="/vendedor">
+          <span class="menu-icon">▣</span>
+          Ventas
+        </a>
+      }
+
+      @if (usuarioActual.rol === 'Bodeguero') {
+        <a routerLink="/bodeguero">
+          <span class="menu-icon">▤</span>
+          Inventario
+        </a>
+      }
+    </div>
+
+    <div class="sidebar-footer">
+        <span class="avatar">{{ usuarioActual.username?.charAt(0)?.toUpperCase() }}</span>
+
+    <div class="user-details">
+    <strong>{{ usuarioActual.username }}</strong>
+    <small>{{ usuarioActual.rol }}</small>
+  </div>
+
+  <button
+    class="logout-button"
+    (click)="cerrarSesion()"
+    title="Cerrar sesión">
+    ↪
+  </button>
+</div>
+  </aside>
+
+  <!-- Contenido principal -->
+  <main class="main-content">
+
+    <header class="topbar">
+      <div>
+        <h3>Panel principal</h3>
+        <span>Sistema de gestión de inventario y ventas</span>
+      </div>
+
+      <div class="user-info">
+        <span class="avatar">{{ usuarioActual.username?.charAt(0)?.toUpperCase() }}</span>
+        <div>
+          <strong>{{ usuarioActual.username }}</strong>
+          <small>{{ usuarioActual.rol }}</small>
+        </div>
+      </div>
+    </header>
+
+    <section class="welcome">
+      <span class="welcome-label">INVENTARIOVENTAS</span>
+      <h1>¡Bienvenido, {{ usuarioActual.nombre || usuarioActual.username }}!</h1>
+      <p>Nos alegra tenerte de vuelta. Desde aquí puedes gestionar tus actividades en el sistema.</p>
+    </section>
+
+    <section class="dashboard-heading">
+      <h2>Resumen general</h2>
+      <p>Selecciona una opción para comenzar a trabajar.</p>
+    </section>
+
+    <section class="cards">
+
+      @if (usuarioActual.rol === 'Admin') {
+        <a class="dashboard-card" routerLink="/admin">
+          <div class="card-icon">⚙</div>
+          <h3>Administración</h3>
+          <p>Gestiona y supervisa las funcionalidades del sistema.</p>
+          <span>Acceder →</span>
+        </a>
+      }
+
+      @if (usuarioActual.rol === 'Vendedor') {
+        <a class="dashboard-card" routerLink="/vendedor">
+          <div class="card-icon">▣</div>
+          <h3>Ventas</h3>
+          <p>Accede a las operaciones comerciales y clientes.</p>
+          <span>Acceder →</span>
+        </a>
+      }
+
+      @if (usuarioActual.rol === 'Bodeguero') {
+        <a class="dashboard-card" routerLink="/bodeguero">
+          <div class="card-icon">▤</div>
+          <h3>Inventario</h3>
+          <p>Consulta y administra las operaciones de inventario.</p>
+          <span>Acceder →</span>
+        </a>
+      }
+
+    </section>
+
+  </main>
+</div>

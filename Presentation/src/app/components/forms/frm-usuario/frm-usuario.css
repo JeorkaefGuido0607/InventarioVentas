@@ -1,0 +1,130 @@
+
+:host {
+  display: block;
+}
+
+.form-container {
+  padding: 28px;
+  background: #fff;
+  border-radius: 14px;
+  font-family: Arial, sans-serif;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 25px;
+}
+
+.form-header h2 {
+  color: #30205d;
+  margin: 0 0 7px;
+}
+
+.form-header p {
+  color: #777;
+  margin: 0;
+  font-size: 14px;
+}
+
+.close-button {
+  border: none;
+  background: transparent;
+  color: #777;
+  font-size: 27px;
+  cursor: pointer;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+  flex: 1;
+  min-width: 0;
+}
+
+.form-group label {
+  color: #30205d;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+  font-size: 14px;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #6042a0;
+}
+
+.form-group small {
+  color: #c62828;
+  font-size: 12px;
+}
+
+.form-row {
+  display: flex;
+  gap: 15px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 25px;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 12px 18px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-primary {
+  background: #6042a0;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #49317e;
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: #eee8fa;
+  color: #6042a0;
+}
+
+.error-message {
+  color: #c62828;
+  font-size: 13px;
+}
+
+@media (max-width: 550px) {
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .form-container {
+    padding: 20px;
+  }
+}

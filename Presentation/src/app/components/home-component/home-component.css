@@ -1,0 +1,306 @@
+
+:host {
+  display: block;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  color: #29243a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.dashboard {
+  display: flex;
+  min-height: 100vh;
+  background: #f7f6fb;
+}
+
+/* Menú lateral */
+.sidebar {
+  width: 260px;
+  min-height: 100vh;
+  background: #30205d;
+  color: white;
+  padding: 28px 18px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 8px 35px;
+}
+
+.brand-icon {
+  width: 43px;
+  height: 43px;
+  background: #8b68dc;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 17px;
+  font-weight: bold;
+}
+
+.brand h2 {
+  font-size: 16px;
+  margin: 0 0 5px;
+}
+
+.brand span,
+.sidebar-footer small,
+.user-info small {
+  display: block;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.menu-title {
+  display: block;
+  color: #b9acd9;
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 1.2px;
+  padding: 0 12px 14px;
+}
+
+.menu-section a {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  color: #e8e1f8;
+  text-decoration: none;
+  padding: 13px 14px;
+  border-radius: 9px;
+  margin-bottom: 7px;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.menu-section a:hover,
+.menu-section a.active {
+  background: #59418d;
+  color: white;
+}
+
+.menu-icon {
+  font-size: 19px;
+}
+
+.sidebar-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: auto;
+  padding: 20px 8px 0;
+  border-top: 1px solid #51417a;
+  font-size: 13px;
+}
+
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #8b68dc;
+  color: white;
+  display: grid;
+  place-items: center;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+/* Contenido principal */
+.main-content {
+  flex: 1;
+  min-width: 0;
+  padding: 0 38px 40px;
+}
+
+.topbar {
+  min-height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e9e5f0;
+  gap: 15px;
+}
+
+.topbar h3 {
+  margin: 0 0 5px;
+  font-size: 18px;
+}
+
+.topbar span {
+  color: #817b90;
+  font-size: 12px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.user-info small {
+  color: #817b90;
+  margin-top: 4px;
+  opacity: 1;
+}
+
+/* Bienvenida */
+.welcome {
+  margin-top: 35px;
+  padding: 38px;
+  border-radius: 18px;
+  color: white;
+  background: linear-gradient(120deg, #49317f, #8663ce);
+}
+
+.welcome-label {
+  font-size: 11px;
+  letter-spacing: 2px;
+  opacity: 0.8;
+  font-weight: bold;
+}
+
+.welcome h1 {
+  font-size: 27px;
+  margin: 15px 0 10px;
+}
+
+.welcome p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+.dashboard-heading {
+  margin: 35px 0 20px;
+}
+
+.dashboard-heading h2 {
+  font-size: 20px;
+  margin: 0 0 7px;
+}
+
+.dashboard-heading p {
+  font-size: 13px;
+  color: #817b90;
+  margin: 0;
+}
+
+/* Tarjetas */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.dashboard-card {
+  background: white;
+  border: 1px solid #eeeaf5;
+  border-radius: 15px;
+  padding: 25px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px #30205d15;
+}
+
+.card-icon {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: #f0eafb;
+  color: #6945aa;
+  font-size: 23px;
+}
+
+.dashboard-card h3 {
+  margin: 20px 0 9px;
+  font-size: 16px;
+}
+
+.dashboard-card p {
+  color: #817b90;
+  font-size: 13px;
+  line-height: 1.6;
+  min-height: 42px;
+}
+
+.dashboard-card > span {
+  display: inline-block;
+  margin-top: 10px;
+  color: #6945aa;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+/* Adaptación a pantallas pequeñas */
+@media (max-width: 760px) {
+  .dashboard {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    min-height: auto;
+    padding: 18px;
+  }
+
+  .brand {
+    padding-bottom: 20px;
+  }
+
+  .sidebar-footer {
+    display: none;
+  }
+
+  .main-content {
+    padding: 0 18px 30px;
+  }
+
+  .topbar {
+    min-height: 75px;
+  }
+
+  .welcome {
+    padding: 25px;
+  }
+
+  .welcome h1 {
+    font-size: 22px;
+  }
+}
+
+.user-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.logout-button {
+  border: none;
+  background: transparent;
+  color: white;
+  font-size: 23px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.logout-button:hover {
+  background: #59418d;
+}
