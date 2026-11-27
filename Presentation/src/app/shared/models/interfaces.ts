@@ -42,3 +42,20 @@ export interface UsuariosResponse {
     total: number;
   };
 }
+
+export interface Categoria {
+  id: number;
+  nombre: string;
+  descripcion: string | null;
+  activo: boolean;
+  productos_count: number;
+}
+
+export interface CategoriasResponse {
+  data: Categoria[];
+  pagination: {
+    offset: number;
+    limit: number;
+    total: number;
+  };
+}

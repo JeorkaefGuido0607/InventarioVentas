@@ -6,19 +6,20 @@ import { roleGuard } from './shared/helpers/guards/role-guard';
 import { AdminComponent } from './components/admin-component/admin-component';
 import { VendedorComponent } from './components/vendedor-component/vendedor-component';
 import { BodegueroComponent } from './components/bodeguero-component/bodeguero-component';
+import { CategoriaComponent } from './components/categoria-component/categoria-component';
 
 export const routes: Routes = [{
-    path: 'login',
-    component: LoginComponent
-  },
+  path: 'login',
+  component: LoginComponent
+},
 
-  {
-    path: 'home',
-    component: HomeComponent,
-    canActivate: [authGuard, roleGuard],
-    data: {
-        roles: ['Admin', 'Vendedor', 'Bodeguero']
-    }
+{
+  path: 'home',
+  component: HomeComponent,
+  canActivate: [authGuard, roleGuard],
+  data: {
+    roles: ['Admin', 'Vendedor', 'Bodeguero']
+  }
 },
 
 {
@@ -42,9 +43,16 @@ export const routes: Routes = [{
   data: { roles: ['Bodeguero'] }
 },
 
-  {
-    path: '',
-    redirectTo: 'login',
-    pathMatch: 'full'
+{
+  path: '',
+  redirectTo: 'login',
+  pathMatch: 'full'
+}, {
+  path: 'categorias',
+  component: CategoriaComponent,
+  canActivate: [authGuard, roleGuard],
+  data: {
+    roles: ['Admin', 'Vendedor', 'Bodeguero']
   }
+},
 ];

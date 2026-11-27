@@ -1,4 +1,3 @@
-
 <div class="admin-container">
 
   <header class="admin-header">
@@ -13,14 +12,14 @@
   </header>
 
   <section class="summary-card">
-      <div>
-        <span>Total de usuarios</span>
-        <h2>{{ totalUsuarios }}</h2>
-      </div>
-      <span class="summary-icon">👥</span>
-    </section>
+    <div>
+      <span>Total de usuarios</span>
+      <h2>{{ totalUsuarios }}</h2>
+    </div>
+    <span class="summary-icon">👥</span>
+  </section>
 
-    <section class="search-container">
+  <section class="search-container">
 
     <div class="search-field">
       <label for="tipoBusqueda">Buscar por:</label>
@@ -34,152 +33,126 @@
     <div class="search-field search-input">
       <label for="buscarUsuario">Buscar usuario:</label>
 
-      <input
-        id="buscarUsuario"
-        type="text"
-        placeholder="Escribe para buscar..."
+      <input id="buscarUsuario" type="text" placeholder="Escribe para buscar..."
         (input)="buscarUsuarios($any($event.target).value, tipoBusqueda.value)">
     </div>
 
   </section>
 
   @if (cargando) {
-    <p class="message">Cargando usuarios...</p>
+  <p class="message">Cargando usuarios...</p>
   }
 
   @if (mensajeError) {
-    <p class="error-message">{{ mensajeError }}</p>
+  <p class="error-message">{{ mensajeError }}</p>
   }
 
   @if (!cargando && !mensajeError) {
-    <section class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Usuario</th>
-            <th>Nombre completo</th>
-            <th>Correo</th>
-            <th>Rol</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
+  <section class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Usuario</th>
+          <th>Nombre completo</th>
+          <th>Correo</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
 
-        <tbody>
-          @for (usuario of usuarios; track usuario.id) {
-            <tr>
-              <td>{{ usuario.username }}</td>
-              <td>{{ usuario.nombre_completo }}</td>
-              <td>{{ usuario.correo }}</td>
+      <tbody>
+        @for (usuario of usuarios; track usuario.id) {
+        <tr>
+          <td>{{ usuario.username }}</td>
+          <td>{{ usuario.nombre_completo }}</td>
+          <td>{{ usuario.correo }}</td>
 
-              <td>
-                <span class="role-badge">{{ usuario.rol }}</span>
-              </td>
+          <td>
+            <span class="role-badge">{{ usuario.rol }}</span>
+          </td>
 
-              <td>
-                <span
-                  class="status-badge"
-                  [class.active]="usuario.activo"
-                  [class.inactive]="!usuario.activo">
-                  {{ usuario.activo ? 'Activo' : 'Inactivo' }}
-                </span>
-              </td>
+          <td>
+            <span class="status-badge" [class.active]="usuario.activo" [class.inactive]="!usuario.activo">
+              {{ usuario.activo ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
 
-              <td>
-                <button
-                  class="action-button edit-button"
-                  (click)="editarUsuario(usuario)"
-                  title="Editar usuario">
-                  ✏️
-                </button>
+          <td>
+            <button class="action-button edit-button" (click)="editarUsuario(usuario)" title="Editar usuario">
+              ✏️
+            </button>
 
-                <button
-                  class="action-button delete-button"
-                  (click)="eliminarUsuario(usuario)"
-                  title="Eliminar usuario">
-                  🗑️
-                </button>
-              </td>
-            </tr>
-          } @empty {
-            <tr>
-              <td colspan="6" class="empty-message">
-                No hay usuarios registrados.
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-      <div class="pagination-container">
+            <button class="action-button delete-button" (click)="eliminarUsuario(usuario)" title="Eliminar usuario">
+              🗑️
+            </button>
+          </td>
+        </tr>
+        } @empty {
+        <tr>
+          <td colspan="6" class="empty-message">
+            No hay usuarios registrados.
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+    <div class="pagination-container">
 
-  <span class="pagination-info">
-    Página {{ paginaActual }} de {{ totalPaginas }}
-    | {{ totalUsuarios }} usuarios
-  </span>
+      <span class="pagination-info">
+        Página {{ paginaActual }} de {{ totalPaginas }}
+        | {{ totalUsuarios }} usuarios
+      </span>
 
-  <div class="pagination-buttons">
+      <div class="pagination-buttons">
 
-    <button
-      type="button"
-      class="pagination-button"
-      [disabled]="paginaActual === 1 || cargando"
-      (click)="paginaActual = paginaActual - 1; listarUsuarios()">
-      ← Anterior
-    </button>
+        <button type="button" class="pagination-button" [disabled]="paginaActual === 1 || cargando"
+          (click)="paginaActual = paginaActual - 1; listarUsuarios()">
+          ← Anterior
+        </button>
 
-    <span class="current-page">
-      {{ paginaActual }}
-    </span>
+        <span class="current-page">
+          {{ paginaActual }}
+        </span>
 
-    <button
-      type="button"
-      class="pagination-button"
-      [disabled]="paginaActual >= totalPaginas || cargando"
-      (click)="paginaActual = paginaActual + 1; listarUsuarios()">
-      Siguiente →
-    </button>
+        <button type="button" class="pagination-button" [disabled]="paginaActual >= totalPaginas || cargando"
+          (click)="paginaActual = paginaActual + 1; listarUsuarios()">
+          Siguiente →
+        </button>
 
-  </div>
-</div>
-    </section>
+      </div>
+    </div>
+  </section>
   }
 
 </div>
 @if (usuarioAEliminar) {
-  <div class="modal-overlay">
-    <div class="modal-confirmacion">
+<div class="modal-overlay">
+  <div class="modal-confirmacion">
 
-      <div class="modal-icon">
-        🗑️
-      </div>
-
-      <h2>¿Eliminar usuario?</h2>
-
-      <p>
-        ¿Estás seguro de que deseas eliminar a
-        <strong>{{ usuarioAEliminar.username }}</strong>?
-      </p>
-
-      <small>Esta acción no se puede deshacer.</small>
-
-      <div class="modal-actions">
-        <button
-          type="button"
-          class="btn-cancelar"
-          (click)="cancelarEliminacion()">
-          Cancelar
-        </button>
-
-        <button
-          type="button"
-          class="btn-eliminar"
-          (click)="confirmarEliminacion()">
-          Eliminar
-        </button>
-      </div>
-
+    <div class="modal-icon">
+      🗑️
     </div>
+
+    <h2>¿Eliminar usuario?</h2>
+
+    <p>
+      ¿Estás seguro de que deseas eliminar a
+      <strong>{{ usuarioAEliminar.username }}</strong>?
+    </p>
+
+    <small>Esta acción no se puede deshacer.</small>
+
+    <div class="modal-actions">
+      <button type="button" class="btn-cancelar" (click)="cancelarEliminacion()">
+        Cancelar
+      </button>
+
+      <button type="button" class="btn-eliminar" (click)="confirmarEliminacion()">
+        Eliminar
+      </button>
+    </div>
+
   </div>
+</div>
 }
-
-

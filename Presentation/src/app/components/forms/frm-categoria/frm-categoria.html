@@ -1,0 +1,63 @@
+<div class="form-container">
+  <h2>{{ categoria ? 'Editar categoría' : 'Nueva categoría' }}</h2>
+
+  <form [formGroup]="formulario" (ngSubmit)="guardar()">
+
+    <div class="form-group">
+      <label for="nombre">Nombre de la categoría</label>
+      <input
+        id="nombre"
+        type="text"
+        formControlName="nombre"
+        placeholder="Ej. Electrónicos"
+      />
+
+      @if (formulario.get('nombre')?.touched && formulario.get('nombre')?.errors) {
+        <small class="error">
+          @if (formulario.get('nombre')?.hasError('required')) {
+            El nombre es obligatorio.
+          } @else if (formulario.get('nombre')?.hasError('minlength')) {
+            Debe tener al menos 3 caracteres.
+          } @else if (formulario.get('nombre')?.hasError('maxlength')) {
+            No puede superar los 100 caracteres.
+          } @else if (formulario.get('nombre')?.hasError('pattern')) {
+            El nombre contiene caracteres no permitidos.
+          }
+        </small>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="descripcion">Descripción</label>
+      <textarea
+        id="descripcion"
+        formControlName="descripcion"
+        rows="4"
+        maxlength="255"
+        placeholder="Descripción de la categoría"
+      ></textarea>
+
+      @if (formulario.get('descripcion')?.touched && formulario.get('descripcion')?.hasError('maxlength')) {
+        <small class="error">La descripción no puede superar los 255 caracteres.</small>
+      }
+    </div>
+
+    <div class="form-group checkbox-group">
+      <label>
+        <input type="checkbox" formControlName="activo" />
+        Categoría activa
+      </label>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-cancelar" (click)="cancelar()">
+        Cancelar
+      </button>
+
+      <button type="submit" class="btn-guardar">
+        {{ categoria ? 'Guardar cambios' : 'Crear categoría' }}
+      </button>
+    </div>
+
+  </form>
+</div>

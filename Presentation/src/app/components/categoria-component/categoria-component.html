@@ -1,0 +1,180 @@
+<div class="categoria-container">
+
+    <header class="categoria-header">
+        <div>
+            <h1>Administración de categorías</h1>
+            <p>Gestiona las categorías de productos de InventarioVentas.</p>
+        </div>
+
+        @if (puedeCrear) {
+        <button class="btn-primary" (click)="crearCategoria()">
+            + Nueva categoría
+        </button>
+        }
+    </header>
+
+    <section class="summary-card">
+        <div>
+            <span>Total de categorías</span>
+            <h2>{{ totalCategorias }}</h2>
+        </div>
+        <span class="summary-icon">🏷️</span>
+    </section>
+
+    <section class="search-container">
+
+        <div class="search-field search-input">
+            <label for="buscarCategoria">Buscar categoría:</label>
+            <input id="buscarCategoria" type="text" placeholder="Escribe el nombre..." [(ngModel)]="filtroNombre"
+                (keyup.enter)="buscarCategorias()">
+        </div>
+
+        <div class="search-field">
+            <label for="filtroActivo">Estado:</label>
+            <select id="filtroActivo" [(ngModel)]="filtroActivo" (change)="buscarCategorias()">
+                <option value="">Todos</option>
+                <option value="true">Activas</option>
+                <option value="false">Inactivas</option>
+            </select>
+        </div>
+
+        <button class="btn-primary" (click)="buscarCategorias()">
+            Buscar
+        </button>
+
+    </section>
+
+    @if (cargando) {
+    <p class="message">Cargando categorías...</p>
+    }
+
+    @if (mostrarAlerta) {
+    <div class="modal-overlay">
+        <div class="modal-confirmacion modal-error">
+            <div class="error-icon">⚠️</div>
+
+            <h2>No se puede eliminar</h2>
+
+            <p>{{ mensajeError }}</p>
+
+            <div class="modal-actions">
+                <button class="btn-guardar" (click)="cerrarAlerta()">
+                    Entendido
+                </button>
+            </div>
+        </div>
+    </div>
+    }
+
+    @if (!cargando) {
+
+    <section class="table-container">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Productos asociados</th>
+                    <th>Estado</th>
+                    @if (puedeEditar || puedeEliminar) {
+                    <th>Acciones</th>
+                    }
+                </tr>
+            </thead>
+
+            <tbody>
+                @for (categoria of categorias; track categoria.id) {
+                <tr>
+                    <td>{{ categoria.nombre }}</td>
+                    <td>{{ categoria.descripcion || 'Sin descripción' }}</td>
+                    <td>{{ categoria.productos_count }}</td>
+                    <td>
+                        <span class="status-badge" [class.active]="categoria.activo"
+                            [class.inactive]="!categoria.activo">
+                            {{ categoria.activo ? 'Activa' : 'Inactiva' }}
+                        </span>
+                    </td>
+                    @if (puedeEditar || puedeEliminar) {
+                    <td>
+                        @if (puedeEditar) {
+                        <button class="action-button edit-button" title="Editar categoría"
+                            (click)="editarCategoria(categoria)">
+                            ✏️
+                        </button>
+                        }
+
+                        @if (puedeEliminar) {
+                        <button class="action-button delete-button" title="Eliminar categoría"
+                            (click)="eliminarCategoria(categoria)">
+                            🗑️
+                        </button>
+                        }
+                    </td>
+                    }
+                </tr>
+                } @empty {
+                <tr>
+                    <td colspan="5" class="empty-message">
+                        No se encontraron categorías.
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="pagination-container">
+
+            <span class="pagination-info">
+                Página {{ paginaActual }} de {{ totalPaginas }}
+                | {{ totalCategorias }} categorías
+            </span>
+
+            <div class="pagination-buttons">
+
+                <button type="button" class="pagination-button" [disabled]="paginaActual === 1 || cargando"
+                    (click)="paginaActual = paginaActual - 1; listarCategorias()">
+                    ← Anterior
+                </button>
+
+                <span class="current-page">{{ paginaActual }}</span>
+
+                <button type="button" class="pagination-button" [disabled]="paginaActual >= totalPaginas || cargando"
+                    (click)="paginaActual = paginaActual + 1; listarCategorias()">
+                    Siguiente →
+                </button>
+
+            </div>
+        </div>
+
+    </section>
+    }
+
+    @if (mostrarConfirmacion && categoriaEliminar) {
+    <div class="modal-overlay">
+        <div class="modal-confirmacion">
+            <h2>Eliminar categoría</h2>
+
+            <p>
+                ¿Estás segura de que deseas eliminar la categoría
+                <strong>{{ categoriaEliminar.nombre }}</strong>?
+            </p>
+
+            <p class="warning-text">
+                Esta acción no se puede deshacer.
+            </p>
+
+            <div class="modal-actions">
+                <button class="btn-cancelar" (click)="cancelarEliminacion()">
+                    Cancelar
+                </button>
+
+                <button class="btn-eliminar" (click)="confirmarEliminacion()">
+                    Sí, eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+    }
+
+</div>
